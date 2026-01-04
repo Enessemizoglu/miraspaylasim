@@ -1,0 +1,276 @@
+@{
+    ViewData["Title"] = "Yapılan Yardımlar";
+}
+<div class="card wizard-card p-4">
+    <div class="wizard-progress"><div class="bar" style="--progress: 97%"></div></div>
+    <h4 class="mb-3">Miras Hesaplama - Yapılan Yardımları Girin</h4>
+    
+    <div class="mb-3">
+        <small class="text-muted">Aşağıya, miras bırakanın hangi mirasçıya ne verdiğini ve yaklaşık değerini girin. Gerektiğinde birden fazla ekleyebilirsiniz.</small>
+    </div>
+    
+    <form asp-action="AssistanceForm" method="post">
+        <div id="assistanceItems">
+            <div class="assistance-item border rounded p-3 mb-3" data-item-index="0">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">Yardım 1</h6>
+                    <button type="button" class="btn btn-sm btn-danger remove-assistance-btn" style="display: none;">
+                        <i class="bi bi-trash"></i> Sil
+                    </button>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Mirasçı Adı</label>
+                        <select class="form-select" name="heirName_0" required>
+                            <option value="">Yardım yapılan mirasçıyı seçin</option>
+                            @if (ViewBag.PotentialHeirs != null)
+                            {
+                                @foreach (var heir in (List<string>)ViewBag.PotentialHeirs)
+                                {
+                                    <option value="@heir">@heir</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Verilen Şey</label>
+                        <select class="form-select" name="assistanceType_0" required>
+                            <option value="">Yardım türünü seçin</option>
+                            <option value="Ev">Ev</option>
+                            <option value="Araba">Araba</option>
+                            <option value="Para">Para</option>
+                            <option value="Arsa">Arsa</option>
+                            <option value="İş Kurma Desteği">İş Kurma Desteği</option>
+                            <option value="Diğer">Diğer</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Tahmini Değer (₺)</label>
+                        <input class="form-control" type="number" name="estimatedValue_0" step="0.01" min="0" required />
+                        <small class="form-text text-muted">Bu yardımın güncel yaklaşık değeri (₺)</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            Mirastan Sayılsın mı?
+                            <button type="button" class="btn btn-sm btn-link p-0 ms-1" data-bs-toggle="popover" data-bs-placement="top" 
+                                    data-bs-content="Denkleştirme Nedir? Miras bırakan hayattayken bir mirasçısına yaptığı önemli karşılıksız kazandırmaların, paylaşım sırasında adalet için hesaba katılmasıdır. Eğer miras bırakan özellikle 'Bu bağış mirastan sayılmayacak.' demediyse, yapılan yardım denkleştirmeye tabidir.">
+                                <span class="badge bg-info">?</span>
+                            </button>
+                        </label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="countAsInheritance_0" id="countYes_0" value="Evet" required />
+                            <label class="form-check-label" for="countYes_0">Evet</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="countAsInheritance_0" id="countNo_0" value="Hayır" />
+                            <label class="form-check-label" for="countNo_0">Hayır</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="countAsInheritance_0" id="countUnknown_0" value="Bilmiyorum" />
+                            <label class="form-check-label" for="countUnknown_0">Bilmiyorum</label>
+                        </div>
+                        <small class="form-text text-muted">Miras bırakan bu yardımı mirastan saymış mıydı?</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button type="button" class="btn btn-outline-primary mb-3" id="addAssistanceBtn">+ Yeni Yardım Ekle</button>
+        
+        <input type="hidden" name="assistanceList" id="assistanceList" />
+        
+        <div class="d-flex justify-content-between">
+            <a href="@Url.Action("Back", new { currentStep = "AssistanceForm" })" class="btn btn-secondary">← Geri</a>
+            <button class="btn btn-success" type="submit">Devam</button>
+        </div>
+    </form>
+</div>
+
+<script>
+let assistanceItemCount = 1;
+
+// Mirasçı listesini JavaScript değişkenine aktar
+const potentialHeirs = @Html.Raw(Json.Serialize(ViewBag.PotentialHeirs ?? new List<string>()));
+
+function buildHeirOptions() {
+    let options = '<option value="">Yardım yapılan mirasçıyı seçin</option>';
+    if (potentialHeirs && potentialHeirs.length > 0) {
+        potentialHeirs.forEach(function(heir) {
+            options += `<option value="${heir}">${heir}</option>`;
+        });
+    }
+    return options;
+}
+
+document.getElementById('addAssistanceBtn').addEventListener('click', function() {
+    const container = document.getElementById('assistanceItems');
+    const newItem = document.createElement('div');
+    newItem.className = 'assistance-item border rounded p-3 mb-3';
+    newItem.setAttribute('data-item-index', assistanceItemCount);
+    newItem.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0">Yardım ${assistanceItemCount + 1}</h6>
+            <button type="button" class="btn btn-sm btn-danger remove-assistance-btn">
+                <i class="bi bi-trash"></i> Sil
+            </button>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Mirasçı Adı</label>
+                <select class="form-select" name="heirName_${assistanceItemCount}" required>
+                    ${buildHeirOptions()}
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Verilen Şey</label>
+                <select class="form-select" name="assistanceType_${assistanceItemCount}" required>
+                    <option value="">Yardım türünü seçin</option>
+                    <option value="Ev">Ev</option>
+                    <option value="Araba">Araba</option>
+                    <option value="Para">Para</option>
+                    <option value="Arsa">Arsa</option>
+                    <option value="İş Kurma Desteği">İş Kurma Desteği</option>
+                    <option value="Diğer">Diğer</option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Tahmini Değer (₺)</label>
+                <input class="form-control" type="number" name="estimatedValue_${assistanceItemCount}" step="0.01" min="0" required />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Mirastan Sayılsın mı?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="countAsInheritance_${assistanceItemCount}" id="countYes_${assistanceItemCount}" value="Evet" required />
+                    <label class="form-check-label" for="countYes_${assistanceItemCount}">Evet</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="countAsInheritance_${assistanceItemCount}" id="countNo_${assistanceItemCount}" value="Hayır" />
+                    <label class="form-check-label" for="countNo_${assistanceItemCount}">Hayır</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="countAsInheritance_${assistanceItemCount}" id="countUnknown_${assistanceItemCount}" value="Bilmiyorum" />
+                    <label class="form-check-label" for="countUnknown_${assistanceItemCount}">Bilmiyorum</label>
+                </div>
+            </div>
+        </div>
+    `;
+    container.appendChild(newItem);
+    assistanceItemCount++;
+    updateRemoveButtons();
+});
+
+// Silme butonu event listener
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.remove-assistance-btn')) {
+        const item = e.target.closest('.assistance-item');
+        if (item) {
+            item.remove();
+            updateItemNumbers();
+            updateRemoveButtons();
+        }
+    }
+});
+
+// Yardım numaralarını güncelle
+function updateItemNumbers() {
+    const items = document.querySelectorAll('.assistance-item');
+    items.forEach((item, index) => {
+        const title = item.querySelector('h6');
+        if (title) {
+            title.textContent = `Yardım ${index + 1}`;
+        }
+        // Name attribute'larını güncelle
+        const inputs = item.querySelectorAll('[name]');
+        inputs.forEach(input => {
+            const name = input.getAttribute('name');
+            if (name) {
+                const newName = name.replace(/_\d+$/, `_${index}`);
+                input.setAttribute('name', newName);
+                // ID'leri de güncelle
+                if (input.id) {
+                    const newId = input.id.replace(/\d+$/, index);
+                    input.setAttribute('id', newId);
+                    const label = item.querySelector(`label[for="${input.id}"]`);
+                    if (label) {
+                        label.setAttribute('for', newId);
+                    }
+                }
+            }
+        });
+        item.setAttribute('data-item-index', index);
+    });
+    assistanceItemCount = items.length;
+}
+
+// Silme butonlarını göster/gizle (en az 1 item kalmalı)
+function updateRemoveButtons() {
+    const items = document.querySelectorAll('.assistance-item');
+    const removeButtons = document.querySelectorAll('.remove-assistance-btn');
+    
+    if (items.length > 1) {
+        removeButtons.forEach(btn => btn.style.display = 'block');
+    } else {
+        removeButtons.forEach(btn => btn.style.display = 'none');
+    }
+}
+
+// Form submit'ten önce hidden input'u doldur
+function updateAssistanceList() {
+    const items = [];
+    const itemElements = document.querySelectorAll('.assistance-item');
+    
+    itemElements.forEach((item) => {
+        const heirSelect = item.querySelector('[name^="heirName_"]');
+        const typeSelect = item.querySelector('[name^="assistanceType_"]');
+        const valueInput = item.querySelector('[name^="estimatedValue_"]');
+        const inheritanceRadios = item.querySelectorAll('[name^="countAsInheritance_"]');
+        
+        const heirName = heirSelect?.value?.trim();
+        const assistanceType = typeSelect?.value?.trim();
+        const estimatedValue = parseFloat(valueInput?.value || 0) || 0;
+        const countAsInheritance = Array.from(inheritanceRadios).find(r => r.checked)?.value || '';
+        
+        if (heirName && assistanceType && estimatedValue > 0) {
+            items.push({
+                heirName: heirName,
+                assistanceType: assistanceType,
+                estimatedValue: estimatedValue,
+                countAsInheritance: countAsInheritance
+            });
+        }
+    });
+    
+    const jsonString = JSON.stringify(items);
+    document.getElementById('assistanceList').value = jsonString;
+    console.log('AssistanceList JSON:', jsonString);
+    console.log('Items:', items);
+    return items.length > 0;
+}
+
+// Form submit event
+document.querySelector('form').addEventListener('submit', function(e) {
+    updateAssistanceList();
+    // Form validation başarısız olursa submit'i durdur
+    if (!this.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+});
+
+// Her değişiklikte güncelle (real-time)
+document.addEventListener('change', function(e) {
+    if (e.target.closest('.assistance-item')) {
+        updateAssistanceList();
+    }
+});
+
+// Initialize popover
+var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl);
+});
+
+// İlk yüklemede silme butonlarını kontrol et
+updateRemoveButtons();
+</script>
+

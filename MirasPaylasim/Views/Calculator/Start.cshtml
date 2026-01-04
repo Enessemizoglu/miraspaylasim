@@ -1,0 +1,17 @@
+@{
+    ViewData["Title"] = "KVKK Onayı";
+}
+<div class="card wizard-card p-4">
+    <div class="wizard-progress"><div class="bar" style="--progress: 10%"></div></div>
+    <h4 class="mb-3">KVKK Onayı</h4>
+    <form asp-action="Start" method="post">
+        <p>Bu aracı kullanmadan önce KVKK kapsamında bilgilendirme metnini kabul etmeniz gerekir.</p>
+        <div class="form-check my-3">
+            <input class="form-check-input" id="consent" type="checkbox" name="consent" value="true" />
+            <label class="form-check-label" for="consent">Onaylıyorum</label>
+        </div>
+        <button class="btn btn-success" type="submit">Devam</button>
+    </form>
+</div>
+
+

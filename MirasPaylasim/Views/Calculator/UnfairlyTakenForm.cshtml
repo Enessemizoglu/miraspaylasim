@@ -1,0 +1,252 @@
+@{
+    ViewData["Title"] = "Terekeden Çıkarılan Mallar";
+}
+<div class="card wizard-card p-4">
+    <div class="wizard-progress"><div class="bar" style="--progress: 99%"></div></div>
+    <h4 class="mb-3">Miras Hesaplama - Terekeden Çıkarılan Malları Girin</h4>
+    
+    <div class="mb-3">
+        <small class="text-muted">Aşağıya, haksız şekilde devredildiğini düşündüğünüz malı ve bunun kim tarafından alındığını yazın.</small>
+    </div>
+    
+    <form asp-action="UnfairlyTakenForm" method="post">
+        <div id="unfairlyTakenItems">
+            <div class="unfairly-taken-item border rounded p-3 mb-3" data-item-index="0">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">Mal 1</h6>
+                    <button type="button" class="btn btn-sm btn-danger remove-unfairly-taken-btn" style="display: none;">
+                        <i class="bi bi-trash"></i> Sil
+                    </button>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Malın Türü</label>
+                        <select class="form-select" name="propertyType_0" required>
+                            <option value="">Mal türünü seçin:</option>
+                            <option value="Ev">Ev</option>
+                            <option value="Arsa">Arsa</option>
+                            <option value="Araç">Araç</option>
+                            <option value="Para">Para</option>
+                            <option value="Banka hesabı">Banka hesabı</option>
+                            <option value="Değerli eşya">Değerli eşya</option>
+                            <option value="Diğer">Diğer</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Tahmini Güncel Değeri (₺)</label>
+                        <input class="form-control" type="number" name="estimatedValue_0" step="0.01" min="0" required />
+                        <small class="form-text text-muted">Malın güncel değeri nedir?</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Bu mal kim tarafından alındı veya saklandı?</label>
+                        <select class="form-select" name="takenBy_0" required>
+                            <option value="">Kişiyi seçin</option>
+                            @if (ViewBag.PotentialHeirs != null)
+                            {
+                                @foreach (var heir in (List<string>)ViewBag.PotentialHeirs)
+                                {
+                                    <option value="@heir">@heir</option>
+                                }
+                            }
+                            <option value="Üçüncü kişi">Üçüncü kişi</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Alınma/Gizlenme Şekli</label>
+                        <select class="form-select" name="method_0" required>
+                            <option value="">Hangi durum gerçekleşti? →</option>
+                            <option value="Hile">Hile</option>
+                            <option value="Baskı">Baskı</option>
+                            <option value="Gizleme">Gizleme</option>
+                            <option value="Habersiz çekme">Habersiz çekme</option>
+                            <option value="Usulsüz devir">Usulsüz devir</option>
+                            <option value="Diğer">Diğer</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button type="button" class="btn btn-outline-primary mb-3" id="addUnfairlyTakenBtn">+ Yeni Mal Ekle</button>
+        
+        <input type="hidden" name="unfairlyTakenList" id="unfairlyTakenList" />
+        
+        <div class="d-flex justify-content-between">
+            <a href="@Url.Action("Back", new { currentStep = "UnfairlyTakenForm" })" class="btn btn-secondary">← Geri</a>
+            <button class="btn btn-success" type="submit">Hesapla</button>
+        </div>
+    </form>
+</div>
+
+<script>
+let unfairlyTakenItemCount = 1;
+
+// Mirasçı listesini JavaScript değişkenine aktar
+const potentialHeirs = @Html.Raw(Json.Serialize(ViewBag.PotentialHeirs ?? new List<string>()));
+
+function buildHeirOptions() {
+    let options = '<option value="">Kişiyi seçin</option>';
+    if (potentialHeirs && potentialHeirs.length > 0) {
+        potentialHeirs.forEach(function(heir) {
+            options += `<option value="${heir}">${heir}</option>`;
+        });
+    }
+    options += '<option value="Üçüncü kişi">Üçüncü kişi</option>';
+    return options;
+}
+
+document.getElementById('addUnfairlyTakenBtn').addEventListener('click', function() {
+    const container = document.getElementById('unfairlyTakenItems');
+    const newItem = document.createElement('div');
+    newItem.className = 'unfairly-taken-item border rounded p-3 mb-3';
+    newItem.setAttribute('data-item-index', unfairlyTakenItemCount);
+    newItem.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0">Mal ${unfairlyTakenItemCount + 1}</h6>
+            <button type="button" class="btn btn-sm btn-danger remove-unfairly-taken-btn">
+                <i class="bi bi-trash"></i> Sil
+            </button>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Malın Türü</label>
+                <select class="form-select" name="propertyType_${unfairlyTakenItemCount}" required>
+                    <option value="">Mal türünü seçin:</option>
+                    <option value="Ev">Ev</option>
+                    <option value="Arsa">Arsa</option>
+                    <option value="Araç">Araç</option>
+                    <option value="Para">Para</option>
+                    <option value="Banka hesabı">Banka hesabı</option>
+                    <option value="Değerli eşya">Değerli eşya</option>
+                    <option value="Diğer">Diğer</option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Tahmini Güncel Değeri (₺)</label>
+                <input class="form-control" type="number" name="estimatedValue_${unfairlyTakenItemCount}" step="0.01" min="0" required />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Bu mal kim tarafından alındı veya saklandı?</label>
+                <select class="form-select" name="takenBy_${unfairlyTakenItemCount}" required>
+                    ${buildHeirOptions()}
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Alınma/Gizlenme Şekli</label>
+                <select class="form-select" name="method_${unfairlyTakenItemCount}" required>
+                    <option value="">Hangi durum gerçekleşti? →</option>
+                    <option value="Hile">Hile</option>
+                    <option value="Baskı">Baskı</option>
+                    <option value="Gizleme">Gizleme</option>
+                    <option value="Habersiz çekme">Habersiz çekme</option>
+                    <option value="Usulsüz devir">Usulsüz devir</option>
+                    <option value="Diğer">Diğer</option>
+                </select>
+            </div>
+        </div>
+    `;
+    container.appendChild(newItem);
+    unfairlyTakenItemCount++;
+    updateRemoveButtons();
+});
+
+// Silme butonu event listener
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.remove-unfairly-taken-btn')) {
+        const item = e.target.closest('.unfairly-taken-item');
+        if (item) {
+            item.remove();
+            updateItemNumbers();
+            updateRemoveButtons();
+        }
+    }
+});
+
+// Mal numaralarını güncelle
+function updateItemNumbers() {
+    const items = document.querySelectorAll('.unfairly-taken-item');
+    items.forEach((item, index) => {
+        const title = item.querySelector('h6');
+        if (title) {
+            title.textContent = `Mal ${index + 1}`;
+        }
+        // Name attribute'larını güncelle
+        const inputs = item.querySelectorAll('[name]');
+        inputs.forEach(input => {
+            const name = input.getAttribute('name');
+            if (name) {
+                const newName = name.replace(/_\d+$/, `_${index}`);
+                input.setAttribute('name', newName);
+            }
+        });
+        item.setAttribute('data-item-index', index);
+    });
+    unfairlyTakenItemCount = items.length;
+}
+
+// Silme butonlarını göster/gizle (en az 1 item kalmalı)
+function updateRemoveButtons() {
+    const items = document.querySelectorAll('.unfairly-taken-item');
+    const removeButtons = document.querySelectorAll('.remove-unfairly-taken-btn');
+    
+    if (items.length > 1) {
+        removeButtons.forEach(btn => btn.style.display = 'block');
+    } else {
+        removeButtons.forEach(btn => btn.style.display = 'none');
+    }
+}
+
+// Form submit'ten önce hidden input'u doldur
+function updateUnfairlyTakenList() {
+    const items = [];
+    const itemElements = document.querySelectorAll('.unfairly-taken-item');
+    
+    itemElements.forEach((item) => {
+        const propertyTypeSelect = item.querySelector('[name^="propertyType_"]');
+        const estimatedValueInput = item.querySelector('[name^="estimatedValue_"]');
+        const takenBySelect = item.querySelector('[name^="takenBy_"]');
+        const methodSelect = item.querySelector('[name^="method_"]');
+        
+        const propertyType = propertyTypeSelect?.value?.trim();
+        const estimatedValue = parseFloat(estimatedValueInput?.value || 0) || 0;
+        const takenBy = takenBySelect?.value?.trim();
+        const method = methodSelect?.value?.trim();
+        
+        if (propertyType && takenBy && method && estimatedValue > 0) {
+            items.push({
+                propertyType: propertyType,
+                estimatedValue: estimatedValue,
+                takenBy: takenBy,
+                method: method
+            });
+        }
+    });
+    
+    const jsonString = JSON.stringify(items);
+    document.getElementById('unfairlyTakenList').value = jsonString;
+    console.log('UnfairlyTakenList JSON:', jsonString);
+    console.log('Items:', items);
+    return items.length > 0;
+}
+
+// Form submit event
+document.querySelector('form').addEventListener('submit', function(e) {
+    updateUnfairlyTakenList();
+    // Form validation başarısız olursa submit'i durdur
+    if (!this.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+});
+
+// Her değişiklikte güncelle (real-time)
+document.addEventListener('change', function(e) {
+    if (e.target.closest('.unfairly-taken-item')) {
+        updateUnfairlyTakenList();
+    }
+});
+
+// İlk yüklemede silme butonlarını kontrol et
+updateRemoveButtons();
+</script>
+

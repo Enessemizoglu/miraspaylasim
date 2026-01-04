@@ -1,0 +1,329 @@
+@{
+    ViewData["Title"] = "Sonuç";
+}
+<div class="card wizard-card p-4" id="resultCard">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">Miras Paylaşım Sonuçları</h4>
+        @if (Model != null)
+        {
+            <div class="d-flex gap-2">
+                <a href="@Url.Action("History")" class="btn btn-secondary">
+                    <i class="bi bi-clock-history"></i> Geçmişe Git
+                </a>
+                <a href="@Url.Action("DownloadCsv", new { id = Model.Id })" class="btn btn-success">
+                    <i class="bi bi-file-earmark-spreadsheet"></i> CSV İndir
+                </a>
+                <button type="button" class="btn btn-primary" id="downloadPdfBtn">
+                    <i class="bi bi-file-earmark-pdf"></i> PDF İndir
+                </button>
+            </div>
+        }
+    </div>
+    
+    @if (Model == null)
+    {
+        <p>Kayıt bulunamadı.</p>
+    }
+    else
+    {
+        <div class="mb-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card bg-light p-3">
+                        <small class="text-muted">Toplam Malvarlığı</small>
+                        <h5 class="mb-0">@Model.TotalAssets.ToString("N2") TL</h5>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light p-3">
+                        <small class="text-muted">Alacaklar</small>
+                        <h5 class="mb-0">@Model.Receivables.ToString("N2") TL</h5>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light p-3">
+                        <small class="text-muted">Borçlar</small>
+                        <h5 class="mb-0">@Model.Debts.ToString("N2") TL</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-4">
+            <h5 class="text-primary">Net Tereke: <strong>@Model.NetEstate.ToString("N2")</strong> TL</h5>
+        </div>
+        
+        <table class="table table-hover align-middle" id="sharesTable">
+            <thead class="table-primary">
+                <tr>
+                    <th>Mirasçı</th>
+                    <th>Kesir</th>
+                    <th class="text-end">Tutar (TL)</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var s in Model.Shares)
+            {
+                <tr>
+                    <td>@s.HeirDisplay</td>
+                    <td>@s.FractionNumerator/@s.FractionDenominator</td>
+                    <td class="text-end">@s.Amount.ToString("N2")</td>
+                </tr>
+            }
+            </tbody>
+            <tfoot class="table-secondary">
+                <tr>
+                    <th>TOPLAM</th>
+                    <th></th>
+                    <th class="text-end">@Model.NetEstate.ToString("N2")</th>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <div class="alert alert-info mt-4">
+            <strong>Bilgi:</strong> Bu hesaplama Türk Medeni Kanunu'na göre yapılmıştır. 
+            Detaylı hukuki danışmanlık için bir avukata başvurmanız önerilir.
+        </div>
+    }
+</div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+<!-- jsPDF CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" onerror="console.error('jsPDF yüklenemedi')"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js" onerror="console.error('jsPDF-autotable yüklenemedi')"></script>
+
+@if (Model != null && ViewBag.PdfData != null)
+{
+    <script>
+    // Verileri JavaScript'e aktar
+    const resultData = @Html.Raw(ViewBag.PdfData);
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const downloadBtn = document.getElementById('downloadPdfBtn');
+        
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', function() {
+                generatePDF();
+            });
+        }
+        
+        function generatePDF() {
+            try {
+                // jsPDF kontrolü
+                if (typeof window.jspdf === 'undefined') {
+                    alert('PDF kutuphanesi yuklenemedi. Lutfen internet baglantinizi kontrol edin ve sayfayi yenileyin.');
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                if (!jsPDF) {
+                    alert('PDF kutuphanesi yuklenemedi. Lutfen sayfayi yenileyin.');
+                    return;
+                }
+                
+                // Turkce karakterleri Ingilizce karsiliklarina ceviren fonksiyon
+                const removeTurkishChars = (text) => {
+                    if (!text) return '';
+                    return text
+                        .replace(/ç/g, 'c').replace(/Ç/g, 'C')
+                        .replace(/ğ/g, 'g').replace(/Ğ/g, 'G')
+                        .replace(/ı/g, 'i').replace(/İ/g, 'I')
+                        .replace(/ö/g, 'o').replace(/Ö/g, 'O')
+                        .replace(/ş/g, 's').replace(/Ş/g, 'S')
+                        .replace(/ü/g, 'u').replace(/Ü/g, 'U');
+                };
+                
+                const doc = new jsPDF('p', 'mm', 'a4');
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const margin = 15;
+                const maxWidth = pageWidth - (margin * 2);
+                
+                // Sayfa numarası için fonksiyon
+                const addPageNumber = (pageNum) => {
+                    doc.setFontSize(8);
+                    doc.setTextColor(128, 128, 128);
+                    doc.text(
+                        'Sayfa ' + pageNum,
+                        pageWidth / 2,
+                        pageHeight - 10,
+                        { align: 'center' }
+                    );
+                    doc.setTextColor(0, 0, 0);
+                };
+                
+                // Sayfa sayacı
+                let pageNum = 1;
+                
+                // Format fonksiyonu
+                const formatNumber = (num) => {
+                    return num.toLocaleString('tr-TR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                };
+                
+                // Başlık
+                doc.setFontSize(20);
+                doc.setFont(undefined, 'bold');
+                const titleText = removeTurkishChars('Miras Paylasim Sonuclari');
+                const titleWidth = doc.getTextWidth(titleText);
+                doc.text(titleText, (pageWidth - titleWidth) / 2, 25);
+                
+                // Tarih
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                const now = new Date();
+                const months = ['Ocak', 'Subat', 'Mart', 'Nisan', 'Mayis', 'Haziran', 
+                              'Temmuz', 'Agustos', 'Eylul', 'Ekim', 'Kasim', 'Aralik'];
+                const dateStr = now.getDate() + ' ' + removeTurkishChars(months[now.getMonth()]) + ' ' + now.getFullYear();
+                const dateText = 'Tarih: ' + dateStr;
+                const dateWidth = doc.getTextWidth(dateText);
+                doc.text(dateText, (pageWidth - dateWidth) / 2, 32);
+                
+                // Bilgiler bölümü
+                let yPos = 45;
+                doc.setFontSize(11);
+                
+                // Bilgi kartları - basit rect kullanarak
+                const infoBoxHeight = 8;
+                const infoBoxWidth = (maxWidth - 10) / 3;
+                
+                // Toplam Malvarlığı
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin, yPos, infoBoxWidth, infoBoxHeight, 'F');
+                doc.setFontSize(8);
+                doc.text(removeTurkishChars('Toplam Malvarlik'), margin + 5, yPos + 4);
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'bold');
+                const totalAssetsText = formatNumber(resultData.totalAssets) + ' TL';
+                doc.text(totalAssetsText, margin + 5, yPos + 7.5);
+                
+                // Alacaklar
+                doc.setFont(undefined, 'normal');
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin + infoBoxWidth + 5, yPos, infoBoxWidth, infoBoxHeight, 'F');
+                doc.setFontSize(8);
+                doc.text(removeTurkishChars('Alacaklar'), margin + infoBoxWidth + 10, yPos + 4);
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'bold');
+                const receivablesText = formatNumber(resultData.receivables) + ' TL';
+                doc.text(receivablesText, margin + infoBoxWidth + 10, yPos + 7.5);
+                
+                // Borçlar
+                doc.setFont(undefined, 'normal');
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin + (infoBoxWidth + 5) * 2, yPos, infoBoxWidth, infoBoxHeight, 'F');
+                doc.setFontSize(8);
+                doc.text(removeTurkishChars('Borclar'), margin + (infoBoxWidth + 5) * 2 + 5, yPos + 4);
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'bold');
+                const debtsText = formatNumber(resultData.debts) + ' TL';
+                doc.text(debtsText, margin + (infoBoxWidth + 5) * 2 + 5, yPos + 7.5);
+                
+                yPos += infoBoxHeight + 8;
+                
+                // Net Tereke
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                const netEstateText = removeTurkishChars('Net Tereke: ') + formatNumber(resultData.netEstate) + ' TL';
+                doc.text(netEstateText, margin, yPos);
+                yPos += 10;
+                
+                // Tablo verilerini hazırla - Türkçe karakterleri kaldır
+                const tableData = resultData.shares.map(s => [
+                    removeTurkishChars(s.heirDisplay || ''),
+                    s.fractionNumerator + '/' + s.fractionDenominator,
+                    formatNumber(s.amount) + ' TL'
+                ]);
+                
+                // Tablo oluştur
+                doc.autoTable({
+                    startY: yPos,
+                    head: [[removeTurkishChars('Mirasci'), 'Kesir', 'Tutar (TL)']],
+                    body: tableData,
+                    foot: [[removeTurkishChars('TOPLAM'), '', formatNumber(resultData.netEstate) + ' TL']],
+                    theme: 'striped',
+                    headStyles: { 
+                        fillColor: [13, 110, 253],
+                        fontStyle: 'bold',
+                        fontSize: 11
+                    },
+                    footStyles: { 
+                        fillColor: [108, 117, 125],
+                        fontStyle: 'bold',
+                        fontSize: 11
+                    },
+                    styles: { 
+                        fontSize: 10,
+                        cellPadding: 3
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 'auto' },
+                        1: { halign: 'center', cellWidth: 30 },
+                        2: { halign: 'right', cellWidth: 50 }
+                    },
+                    margin: { left: margin, right: margin },
+                    didDrawPage: function(data) {
+                        addPageNumber(pageNum++);
+                    }
+                });
+                
+                // Not
+                const finalY = doc.lastAutoTable.finalY + 10;
+                
+                // Sayfa taşması kontrolü
+                if (finalY > pageHeight - 20) {
+                    doc.addPage();
+                    pageNum++;
+                    yPos = margin;
+                } else {
+                    yPos = finalY;
+                }
+                
+                doc.setFontSize(9);
+                doc.setFont(undefined, 'italic');
+                doc.setTextColor(100, 100, 100);
+                doc.text(removeTurkishChars('Bu hesaplama Turk Medeni Kanunu\'na gore yapilmistir.'), margin, yPos);
+                doc.text(removeTurkishChars('Detayli hukuki danismanlik icin bir avukata basvurmaniz onerilir.'), margin, yPos + 5);
+                
+                // Son sayfa numarası
+                if (pageNum === 1) {
+                    addPageNumber(1);
+                }
+                
+                // İndir
+                const fileName = 'Miras_Paylasim_' + now.getFullYear() + 
+                    String(now.getMonth() + 1).padStart(2, '0') + 
+                    String(now.getDate()).padStart(2, '0') + '.pdf';
+                doc.save(fileName);
+            } catch (error) {
+                console.error('PDF oluşturma hatası:', error);
+                alert('PDF oluşturulurken bir hata oluştu: ' + error.message);
+            }
+        }
+    });
+    </script>
+}
+else
+{
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const downloadBtn = document.getElementById('downloadPdfBtn');
+        if (downloadBtn) {
+            downloadBtn.style.display = 'none';
+        }
+    });
+    </script>
+}
+
+<style>
+    #sharesTable tfoot th {
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+</style>
+
+

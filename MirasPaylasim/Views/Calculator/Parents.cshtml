@@ -1,0 +1,66 @@
+@using MirasPaylasim.Models
+@{
+    ViewData["Title"] = "Ebeveynler";
+}
+<div class="card wizard-card p-4">
+    <div class="wizard-progress"><div class="bar" style="--progress: 90%"></div></div>
+    <h4 class="mb-3">Miras Hesaplama - Ebeveynler</h4>
+    <form asp-action="Parents" method="post">
+    <div class="mb-3">
+        <label class="form-label">Anne-baba sağ mı?</label>
+        <select class="form-select" name="parentsAlive" id="parentsSelect">
+            <option value="@((int)ParentsAlive.None)">Hayatta değil</option>
+            <option value="@((int)ParentsAlive.MotherOnly)">Sadece Anne</option>
+            <option value="@((int)ParentsAlive.FatherOnly)">Sadece Baba</option>
+            <option value="@((int)ParentsAlive.Both)">Her ikisi</option>
+        </select>
+    </div>
+    <div class="alert alert-info" id="infoMessage" style="display: none;">
+        <strong>Bilgi:</strong> Anne/baba varsa miras 2. zümreye göre hesaplanır. Büyükanne/büyükbaba mirasçı olamaz.
+    </div>
+    <div class="alert alert-warning" id="warningMessage" style="display: none;">
+        <strong>Uyarı:</strong> Anne/baba yoksa büyükanne/büyükbaba ve onların çocukları mirasçı olabilir.
+    </div>
+    <div class="d-flex justify-content-between">
+        <a href="@Url.Action("Back", new { currentStep = "Parents" })" class="btn btn-secondary">← Geri</a>
+        <button class="btn btn-success" type="submit">Devam</button>
+    </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const parentsSelect = document.getElementById('parentsSelect');
+        const infoMessage = document.getElementById('infoMessage');
+        const warningMessage = document.getElementById('warningMessage');
+        
+        if (!parentsSelect || !infoMessage || !warningMessage) {
+            console.log('Some elements not found in Parents page');
+            return;
+        }
+        
+        function updateDisplay() {
+            try {
+                const parentsAlive = parseInt(parentsSelect.value);
+                const noneValue = @((int)ParentsAlive.None);
+                
+                if (parentsAlive === noneValue) {
+                    infoMessage.style.display = 'none';
+                    warningMessage.style.display = 'block';
+                } else {
+                    infoMessage.style.display = 'block';
+                    warningMessage.style.display = 'none';
+                }
+            } catch (e) {
+                console.error('Error in updateDisplay:', e);
+            }
+        }
+        
+        parentsSelect.addEventListener('change', updateDisplay);
+        updateDisplay();
+    } catch (e) {
+        console.error('Error in Parents page script:', e);
+    }
+});
+</script>

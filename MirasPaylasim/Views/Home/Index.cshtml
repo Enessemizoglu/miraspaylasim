@@ -1,0 +1,332 @@
+﻿@{
+    ViewData["Title"] = "Ana Sayfa";
+    var news = ViewBag.News as List<MirasPaylasim.Models.NewsItem> ?? new List<MirasPaylasim.Models.NewsItem>();
+}
+
+<!-- Hero Section (Buton kaldırıldı) -->
+<section class="hero-section bg-primary text-white py-5 mb-5 rounded-3 shadow">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Miras Paylaşımınızı Hesaplayın</h1>
+                <p class="lead mb-4">Türk Medeni Kanunu'na uygun, kolay ve hızlı miras paylaşım hesaplama aracı. Zümre sistemine göre otomatik hesaplama yapın.</p>
+            </div>
+            <div class="col-lg-6 text-center mt-4 mt-lg-0">
+                <div class="hero-icon bg-white bg-opacity-25 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 300px; height: 300px;">
+                    <i class="bi bi-shield-check" style="font-size: 120px;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- İstatistikler Bölümü -->
+<section class="stats-section py-5 bg-light">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <i class="bi bi-calculator-fill text-primary mb-3" style="font-size: 3rem;"></i>
+                    <h3 class="fw-bold text-primary">10.000+</h3>
+                    <p class="text-muted mb-0">Hesaplama Yapıldı</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <i class="bi bi-shield-check-fill text-success mb-3" style="font-size: 3rem;"></i>
+                    <h3 class="fw-bold text-success">%100</h3>
+                    <p class="text-muted mb-0">TMK Uyumlu</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <i class="bi bi-lightning-fill text-warning mb-3" style="font-size: 3rem;"></i>
+                    <h3 class="fw-bold text-warning">5 Dakika</h3>
+                    <p class="text-muted mb-0">Ortalama Süre</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <i class="bi bi-people-fill text-info mb-3" style="font-size: 3rem;"></i>
+                    <h3 class="fw-bold text-info">Ücretsiz</h3>
+                    <p class="text-muted mb-0">Tamamen Bedava</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Bilgilendirme Kartları -->
+<section class="info-cards py-5">
+    <div class="container">
+        <h2 class="text-center mb-5 fw-bold">Miras Hukuku Hakkında</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-people-fill text-primary" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-3">Zümre Sistemi</h5>
+                        <p class="card-text text-muted">Türk Medeni Kanunu'na göre mirasçılar zümreler halinde sıralanır. 1. zümre çocuklar, 2. zümre anne-baba ve kardeşler, 3. zümre büyükanne-büyükbaba ve onların altsoyudur.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-heart-fill text-danger" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-3">Eşin Payı</h5>
+                        <p class="card-text text-muted">Eşin miras payı, diğer mirasçıların durumuna göre değişir. 1. zümre varsa 1/4, 2. zümre varsa 1/2, 3. zümre varsa 3/4 pay alır.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-diagram-3-fill text-success" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-3">Temsilen İniş</h5>
+                        <p class="card-text text-muted">Ölen mirasçının payı, onun çocuklarına (torunlar, yeğenler, kuzenler) temsilen geçer. Bu sistem kuşak atlamayı destekler.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Özellikler Bölümü -->
+<section class="features-section py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5 fw-bold">Neden Bizi Seçmelisiniz?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-lock-fill text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Güvenli</h5>
+                    <p class="text-muted">Tüm verileriniz güvende. Hiçbir bilgi saklanmaz.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-lightning-charge-fill text-warning" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Hızlı</h5>
+                    <p class="text-muted">5 dakikada miras paylaşımınızı hesaplayın.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-gift-fill text-success" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Ücretsiz</h5>
+                    <p class="text-muted">Tamamen ücretsiz, hiçbir ücret talep edilmez.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Nasıl Çalışır Bölümü -->
+<section class="how-it-works py-5">
+    <div class="container">
+        <h2 class="text-center mb-5 fw-bold">Nasıl Çalışır?</h2>
+        <div class="row g-4">
+            <div class="col-md-3 text-center">
+                <div class="step-number bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">1</div>
+                <h5 class="fw-bold">Bilgileri Girin</h5>
+                <p class="text-muted small">Miras bırakanın eş, çocuk, anne-baba durumunu belirtin</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-number bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">2</div>
+                <h5 class="fw-bold">Zümre Bilgileri</h5>
+                <p class="text-muted small">İlgili zümrelerin (kardeş, yeğen, büyükanne vb.) bilgilerini ekleyin</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-number bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">3</div>
+                <h5 class="fw-bold">Hesaplama</h5>
+                <p class="text-muted small">Sistem otomatik olarak payları TMK'ya göre hesaplar</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-number bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">4</div>
+                <h5 class="fw-bold">Sonuç</h5>
+                <p class="text-muted small">Detaylı pay dağılımını görüntüleyin ve kaydedin</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Haberler Bölümü (Geliştirilmiş) -->
+@if (news.Any())
+{
+    <section class="news-section py-5" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold mb-3">Miras Hukuku Haberleri</h2>
+                <p class="text-muted">Güncel miras hukuku gelişmeleri ve haberleri</p>
+            </div>
+            <div class="row g-4">
+                @foreach (var item in news.Take(3))
+                {
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm border-0 news-card">
+                            <div class="card-body p-4 d-flex flex-column">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="news-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                        <i class="bi bi-newspaper"></i>
+                                    </div>
+                                    <small class="text-muted">
+                                        @if (item.PublishDate.HasValue)
+                                        {
+                                            @item.PublishDate.Value.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"))
+                                        }
+                                    </small>
+                                </div>
+                                <h6 class="card-title fw-bold mb-3">@item.Title</h6>
+                                <p class="card-text text-muted small flex-grow-1">@item.Summary</p>
+                                @if (!string.IsNullOrEmpty(item.Link) && item.Link != "#")
+                                {
+                                    <a href="@item.Link" target="_blank" class="btn btn-sm btn-outline-primary mt-auto w-100">
+                                        Devamını Oku <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- CTA Section (Tek Buton) -->
+<section class="cta-section py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="mb-4 fw-bold">Hemen Hesaplamaya Başlayın</h2>
+        <p class="lead mb-4">Türk Medeni Kanunu'na uygun, güvenilir ve hızlı miras paylaşım hesaplama</p>
+        <a asp-controller="Calculator" asp-action="Start" class="btn btn-light btn-lg px-5 py-3 shadow-lg">
+            <i class="bi bi-calculator me-2"></i>Hesaplamaya Başla
+        </a>
+    </div>
+</section>
+
+<!-- Bootstrap Icons için CDN ekle -->
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script>
+        // Scroll animasyonları
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.stat-card, .feature-card, .news-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+}
+
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    }
+    
+    .hero-icon {
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    @@keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+    }
+    
+    .step-number {
+        transition: transform 0.3s ease;
+    }
+    
+    .step-number:hover {
+        transform: scale(1.1);
+    }
+    
+    .stat-card {
+        padding: 2rem 1rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-10px);
+    }
+    
+    .feature-card {
+        background: white;
+        border-radius: 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1) !important;
+    }
+    
+    .news-card {
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .news-card .card-body {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+    
+    .news-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,0.15) !important;
+    }
+    
+    .news-icon {
+        transition: transform 0.3s ease;
+    }
+    
+    .news-card:hover .news-icon {
+        transform: rotate(360deg);
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    }
+    
+    .btn-light:hover {
+        transform: scale(1.05);
+        transition: transform 0.3s ease;
+    }
+</style>

@@ -1,0 +1,57 @@
+@using MirasPaylasim.Models
+@{
+    ViewData["Title"] = "Eş Durumu";
+}
+<div class="card wizard-card p-4">
+    <div class="wizard-progress"><div class="bar" style="--progress: 50%"></div></div>
+    <h4 class="mb-3">Miras Hesaplama - Eş</h4>
+    <form asp-action="Spouse" method="post">
+    <div class="mb-3">
+        <label class="form-label">Mirasbırakanın eşi</label>
+        <select class="form-select" name="spouseStatus" id="spouseStatus" required>
+            <option value="@((int)SpouseStatus.Alive)">Sağ</option>
+            <option value="@((int)SpouseStatus.NotAlive)">Sağ değil</option>
+        </select>
+    </div>
+    <div class="mb-3" id="deathTimingContainer" style="display: none;">
+        <label class="form-label">Eşin vefat zamanı</label>
+        <select class="form-select" name="spouseDeathTiming" id="spouseDeathTiming">
+            <option value="@((int)SpouseDeathTiming.BeforeDeceased)">Mirasçıdan önce vefat</option>
+            <option value="@((int)SpouseDeathTiming.AfterDeceased)">Mirasçıdan sonra vefat</option>
+        </select>
+    </div>
+    <input type="hidden" name="spouseDeathTiming" id="hiddenSpouseDeathTiming" value="@((int)SpouseDeathTiming.NotApplicable)" />
+    <div class="d-flex justify-content-between">
+        <a href="@Url.Action("Start")" class="btn btn-secondary">← Geri</a>
+        <button class="btn btn-success" type="submit">Devam</button>
+    </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const spouseStatusSelect = document.getElementById('spouseStatus');
+        const deathTimingContainer = document.getElementById('deathTimingContainer');
+        const spouseDeathTimingSelect = document.getElementById('spouseDeathTiming');
+        
+        function toggleDeathTiming() {
+            const isAlive = spouseStatusSelect.value === '@((int)SpouseStatus.Alive)';
+            const hiddenInput = document.getElementById('hiddenSpouseDeathTiming');
+            
+            if (isAlive) {
+                deathTimingContainer.style.display = 'none';
+                spouseDeathTimingSelect.removeAttribute('name'); // Form gönderiminden çıkar
+                hiddenInput.setAttribute('name', 'spouseDeathTiming'); // Hidden input'u aktif et
+                hiddenInput.value = '@((int)SpouseDeathTiming.NotApplicable)';
+            } else {
+                deathTimingContainer.style.display = 'block';
+                spouseDeathTimingSelect.setAttribute('name', 'spouseDeathTiming'); // Form gönderimine ekle
+                hiddenInput.removeAttribute('name'); // Hidden input'u devre dışı bırak
+            }
+        }
+        
+        spouseStatusSelect.addEventListener('change', toggleDeathTiming);
+        toggleDeathTiming(); // İlk yüklemede kontrol et
+    });
+</script>
+
