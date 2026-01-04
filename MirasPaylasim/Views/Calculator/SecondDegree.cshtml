@@ -1,0 +1,252 @@
+@{
+    ViewData["Title"] = "2. Zümre - Kardeşler";
+}
+<style>
+    .second-degree-row .col-md-6 {
+        display: flex;
+        flex-direction: column;
+    }
+    .second-degree-row .col-md-6 > h6 {
+        margin-bottom: 1rem;
+        height: 1.5rem;
+    }
+    .second-degree-row .col-md-6 .mb-3 {
+        flex: 0 0 auto;
+    }
+    .second-degree-row .col-md-6 .mb-3:first-of-type {
+        margin-bottom: 1rem;
+    }
+    .second-degree-row .col-md-6 .mb-3:nth-of-type(2) {
+        margin-bottom: 1rem;
+    }
+    .second-degree-row .col-md-6 .form-label {
+        min-height: 2.5rem;
+        display: block;
+        line-height: 1.4;
+        margin-bottom: 0.5rem;
+    }
+    .second-degree-row .col-md-6 input[type="number"] {
+        height: 38px;
+        width: 100%;
+    }
+    .second-degree-row .col-md-6 .form-text {
+        margin-top: 0.25rem;
+        margin-bottom: 0;
+    }
+</style>
+<div class="card wizard-card p-4">
+    <div class="wizard-progress"><div class="bar" style="--progress: 80%"></div></div>
+    <h4 class="mb-3">Miras Hesaplama - 2. Zümre (Kardeşler ve Yeğenler)</h4>
+    @if (ViewBag.FatherAlive && !ViewBag.MotherAlive)
+    {
+        <p class="text-muted mb-4">Baba sağ olduğu için sadece anne tarafı kardeşler mirasçı olabilir. Lütfen anne tarafı kardeş bilgilerini girin.</p>
+    }
+    else if (!ViewBag.FatherAlive && ViewBag.MotherAlive)
+    {
+        <p class="text-muted mb-4">Anne sağ olduğu için sadece baba tarafı kardeşler mirasçı olabilir. Lütfen baba tarafı kardeş bilgilerini girin.</p>
+    }
+    else
+    {
+        <p class="text-muted mb-4">Miras bırakanın kardeşlerinin durumunu belirtin.</p>
+    }
+    <form asp-action="SecondDegree" method="post" id="secondDegreeForm">
+        <div class="row second-degree-row">
+            @if (!ViewBag.FatherAlive)
+            {
+                <div class="col-md-6 d-flex flex-column">
+                    <h6>Baba Tarafı Kardeşler</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Yaşayan baba tarafı kardeş sayısı</label>
+                        <input class="form-control" type="number" name="paternalSiblingsAliveCount" id="paternalSiblingsAliveCount" min="0" value="0" />
+                        <small class="form-text text-muted">Aynı anne-babadan veya sadece babadan olan kardeşler</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Önce vefat eden kaç baba tarafı kardeş var?</label>
+                        <input class="form-control" type="number" id="paternalPredeceasedSiblingsCount" min="0" value="0" />
+                    </div>
+                    <div id="paternalNephewsSection" style="display: none;">
+                        <label class="form-label fw-bold mb-3">Her ölen kardeşin kaç yeğeni var?</label>
+                        <div id="paternalNephewsInputs" class="mb-3">
+                            <!-- JavaScript ile dinamik olarak eklenecek -->
+                        </div>
+                    </div>
+                    <input type="hidden" name="paternalPredeceasedSiblingsChildrenCounts" id="paternalPredeceasedSiblingsChildrenCounts" value="[]" />
+                </div>
+            }
+            else
+            {
+                <input type="hidden" name="paternalSiblingsAliveCount" value="0" />
+                <input type="hidden" name="paternalPredeceasedSiblingsChildrenCounts" value="[]" />
+            }
+            
+            @if (!ViewBag.MotherAlive)
+            {
+                <div class="@(ViewBag.FatherAlive ? "col-md-12" : "col-md-6 d-flex flex-column")">
+                    <h6>Anne Tarafı Kardeşler</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Yaşayan anne tarafı kardeş sayısı</label>
+                        <input class="form-control" type="number" name="maternalSiblingsAliveCount" id="maternalSiblingsAliveCount" min="0" value="0" />
+                        <small class="form-text text-muted">Sadece anneden olan kardeşler</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Önce vefat eden kaç anne tarafı kardeş var?</label>
+                        <input class="form-control" type="number" id="maternalPredeceasedSiblingsCount" min="0" value="0" />
+                    </div>
+                    <div id="maternalNephewsSection" style="display: none;">
+                        <label class="form-label fw-bold mb-3">Her ölen kardeşin kaç yeğeni var?</label>
+                        <div id="maternalNephewsInputs" class="mb-3">
+                            <!-- JavaScript ile dinamik olarak eklenecek -->
+                        </div>
+                    </div>
+                    <input type="hidden" name="maternalPredeceasedSiblingsChildrenCounts" id="maternalPredeceasedSiblingsChildrenCounts" value="[]" />
+                </div>
+            }
+            else
+            {
+                <input type="hidden" name="maternalSiblingsAliveCount" value="0" />
+                <input type="hidden" name="maternalPredeceasedSiblingsChildrenCounts" value="[]" />
+            }
+        </div>
+        @if (ViewBag.FatherAlive && !ViewBag.MotherAlive)
+        {
+            <div class="alert alert-info">
+                <strong>Bilgi:</strong> Baba sağ olduğu için baba tarafı kardeşler mirasçı değildir. Sadece anne tarafı kardeşler ve yeğenler mirasçı olabilir.
+            </div>
+        }
+        else if (!ViewBag.FatherAlive && ViewBag.MotherAlive)
+        {
+            <div class="alert alert-info">
+                <strong>Bilgi:</strong> Anne sağ olduğu için anne tarafı kardeşler mirasçı değildir. Sadece baba tarafı kardeşler ve yeğenler mirasçı olabilir.
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <strong>Bilgi:</strong> 2. zümrede kardeşler ve yeğenler anne/baba ile birlikte mirasçı olurlar. Anne/baba sağsa paylarını alır, ölmüşse kardeşler/yeğenler kendi kollarından miras alır.
+            </div>
+        }
+        <div class="d-flex justify-content-between">
+            <a href="@Url.Action("Back", new { currentStep = "SecondDegree" })" class="btn btn-secondary">← Geri</a>
+            <button class="btn btn-success" type="submit">Devam</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('secondDegreeForm');
+    
+    // Baba tarafı kardeşler için
+    const paternalPredeceasedCountInput = document.getElementById('paternalPredeceasedSiblingsCount');
+    const paternalNephewsSection = document.getElementById('paternalNephewsSection');
+    const paternalNephewsInputs = document.getElementById('paternalNephewsInputs');
+    const paternalHiddenJsonInput = document.getElementById('paternalPredeceasedSiblingsChildrenCounts');
+    
+    // Anne tarafı kardeşler için
+    const maternalPredeceasedCountInput = document.getElementById('maternalPredeceasedSiblingsCount');
+    const maternalNephewsSection = document.getElementById('maternalNephewsSection');
+    const maternalNephewsInputs = document.getElementById('maternalNephewsInputs');
+    const maternalHiddenJsonInput = document.getElementById('maternalPredeceasedSiblingsChildrenCounts');
+    
+    function updateNephewsInputs(count, section, inputsContainer, hiddenInput, labelPrefix) {
+        if (count > 0) {
+            section.style.display = 'block';
+            inputsContainer.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const div = document.createElement('div');
+                div.className = 'mb-3';
+                div.innerHTML = `
+                    <label class="form-label">${i}. ölen kardeşin kaç yeğeni var?</label>
+                    <input class="form-control nephew-input" type="number" min="0" value="0" data-input-id="${hiddenInput.id}" />
+                    <small class="form-text text-muted">Eğer bu kardeşin yeğeni yoksa 0 yazın</small>
+                `;
+                inputsContainer.appendChild(div);
+            }
+        } else {
+            section.style.display = 'none';
+            inputsContainer.innerHTML = '';
+        }
+        updateJsonForSection(hiddenInput);
+    }
+    
+    function updateJsonForSection(hiddenInput) {
+        const allInputs = document.querySelectorAll(`.nephew-input[data-input-id="${hiddenInput.id}"]`);
+        const counts = Array.from(allInputs).map(input => parseInt(input.value || 0));
+        hiddenInput.value = JSON.stringify(counts);
+    }
+    
+    // Baba tarafı event listeners
+    if (paternalPredeceasedCountInput) {
+        paternalPredeceasedCountInput.addEventListener('input', function() {
+            const count = parseInt(this.value || 0);
+            updateNephewsInputs(count, paternalNephewsSection, paternalNephewsInputs, paternalHiddenJsonInput, 'Baba tarafı');
+        });
+    }
+    
+    // Anne tarafı event listeners
+    if (maternalPredeceasedCountInput) {
+        maternalPredeceasedCountInput.addEventListener('input', function() {
+            const count = parseInt(this.value || 0);
+            updateNephewsInputs(count, maternalNephewsSection, maternalNephewsInputs, maternalHiddenJsonInput, 'Anne tarafı');
+        });
+    }
+    
+    // Tüm yeğen input değişikliklerini dinle
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('nephew-input')) {
+            const inputId = e.target.getAttribute('data-input-id');
+            const hiddenInput = document.getElementById(inputId);
+            if (hiddenInput) {
+                updateJsonForSection(hiddenInput);
+            }
+        }
+    });
+    
+    // Form submit öncesi kontrol - JSON'ları güncelle
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Önce submit'i durdur
+            
+            // Tüm JSON'ları güncelle
+            if (paternalHiddenJsonInput && paternalNephewsInputs) {
+                updateJsonForSection(paternalHiddenJsonInput);
+            }
+            if (maternalHiddenJsonInput && maternalNephewsInputs) {
+                updateJsonForSection(maternalHiddenJsonInput);
+            }
+            
+            // Debug için
+            console.log('=== FORM SUBMIT DEBUG ===');
+            if (paternalHiddenJsonInput) {
+                console.log('Baba tarafı JSON:', paternalHiddenJsonInput.value);
+            }
+            if (maternalHiddenJsonInput) {
+                console.log('Anne tarafı JSON:', maternalHiddenJsonInput.value);
+            }
+            
+            // Tüm form input'larını kontrol et
+            const formData = new FormData(form);
+            console.log('Form Data:');
+            for (let [key, value] of formData.entries()) {
+                console.log(key + ':', value);
+            }
+            
+            // Kısa bir gecikme sonrası formu gönder (JSON güncellemesinin tamamlanması için)
+            setTimeout(function() {
+                form.submit();
+            }, 50);
+        });
+    }
+    
+    // İlk yükleme
+    if (paternalPredeceasedCountInput) {
+        const paternalCount = parseInt(paternalPredeceasedCountInput.value || 0);
+        updateNephewsInputs(paternalCount, paternalNephewsSection, paternalNephewsInputs, paternalHiddenJsonInput, 'Baba tarafı');
+    }
+    if (maternalPredeceasedCountInput) {
+        const maternalCount = parseInt(maternalPredeceasedCountInput.value || 0);
+        updateNephewsInputs(maternalCount, maternalNephewsSection, maternalNephewsInputs, maternalHiddenJsonInput, 'Anne tarafı');
+    }
+});
+</script>

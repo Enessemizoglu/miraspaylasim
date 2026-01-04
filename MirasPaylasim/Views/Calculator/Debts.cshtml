@@ -1,0 +1,75 @@
+@{
+    ViewData["Title"] = "Borçlar";
+}
+<div class="card wizard-card p-4">
+    <div class="wizard-progress"><div class="bar" style="--progress: 95%"></div></div>
+    <h4 class="mb-3">Miras Hesaplama - Borçlar</h4>
+    <form asp-action="Debts" method="post">
+        
+        <div class="mb-3">
+            <label class="form-label">Cenaze giderleri / defin ve mezar masrafları:</label>
+            <input class="form-control" type="number" name="funeralExpenses" step="0.01" min="0" value="0" required />
+            <small class="form-text text-muted">(yoksa bu kısma <span style="color: red; font-weight: bold;">"0"</span> giriniz)</small>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Ölümden önceki ve tedavi masrafları:</label>
+            <input class="form-control" type="number" name="treatmentExpenses" step="0.01" min="0" value="0" required />
+            <small class="form-text text-muted">(yoksa bu kısma <span style="color: red; font-weight: bold;">"0"</span> giriniz)</small>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Banka kredi ve borçları:</label>
+            <input class="form-control" type="number" name="bankLoans" step="0.01" min="0" value="0" required />
+            <small class="form-text text-muted">(yoksa bu kısma <span style="color: red; font-weight: bold;">"0"</span> giriniz)</small>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Vergi borçları:</label>
+            <input class="form-control" type="number" name="taxDebts" step="0.01" min="0" value="0" required />
+            <small class="form-text text-muted">(yoksa bu kısma <span style="color: red; font-weight: bold;">"0"</span> giriniz)</small>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">SGK/Prim borçları:</label>
+            <input class="form-control" type="number" name="ssiDebts" step="0.01" min="0" value="0" required />
+            <small class="form-text text-muted">(yoksa bu kısma <span style="color: red; font-weight: bold;">"0"</span> giriniz)</small>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Kira borçları:</label>
+            <input class="form-control" type="number" name="rentDebts" step="0.01" min="0" value="0" required />
+            <small class="form-text text-muted">(yoksa bu kısma <span style="color: red; font-weight: bold;">"0"</span> giriniz)</small>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Ticari borçlar:</label>
+            <input class="form-control" type="number" name="commercialDebts" step="0.01" min="0" value="0" required />
+            <small class="form-text text-muted">(yoksa bu kısma <span style="color: red; font-weight: bold;">"0"</span> giriniz)</small>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Ödenmemiş nafaka borçları:</label>
+            <input class="form-control" type="number" name="alimonyDebts" step="0.01" min="0" value="0" required />
+            <small class="form-text text-muted">(yoksa bu kısma <span style="color: red; font-weight: bold;">"0"</span> giriniz)</small>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Vasiyetname borçları:</label>
+            <input class="form-control" type="number" name="willDebts" step="0.01" min="0" value="0" required />
+            <small class="form-text text-muted">(yoksa bu kısma <span style="color: red; font-weight: bold;">"0"</span> giriniz)</small>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">İşletme borçları / çalışan maaşı / işletme vergi borcu:</label>
+            <input class="form-control" type="number" name="businessDebts" step="0.01" min="0" value="0" required />
+            <small class="form-text text-muted">(yoksa bu kısma <span style="color: red; font-weight: bold;">"0"</span> giriniz)</small>
+        </div>
+      
+        <div class="d-flex justify-content-between">
+            <a href="@Url.Action("Back", new { currentStep = "Debts" })" class="btn btn-secondary">← Geri</a>
+            <button class="btn btn-success" type="submit">Devam</button>
+        </div>
+    </form>
+</div>
+

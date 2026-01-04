@@ -1,0 +1,54 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* Tema renkleri */
+.bg-primary {
+  background: linear-gradient(90deg, #0d6efd 0%, #0b5ed7 100%);
+}
+
+/* Kart ve sihirbaz */
+.wizard-card {
+  max-width: 680px;
+  margin: 0 auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.wizard-progress {
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.wizard-progress .bar {
+  height: 100%;
+  background: linear-gradient(90deg, #198754 0%, #20c997 100%);
+  width: var(--progress, 0%);
+  transition: width 0.3s ease;
+}

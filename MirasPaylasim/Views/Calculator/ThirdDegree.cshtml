@@ -1,0 +1,233 @@
+@{
+    ViewData["Title"] = "3. Zümre";
+}
+<div class="card wizard-card p-4">
+    <div class="wizard-progress"><div class="bar" style="--progress: 95%"></div></div>
+    <h4 class="mb-3">Miras Hesaplama - 3. Zümre (Dört Kök)</h4>
+    <form asp-action="ThirdDegree" method="post" id="thirdDegreeForm">
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Baba Tarafı</h6>
+                
+                <!-- Baba Tarafı Büyükbaba -->
+                <div class="mb-4 p-3 border rounded">
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="paternalGrandfatherAlive" name="paternalGrandfatherAlive" value="true">
+                            <label class="form-check-label" for="paternalGrandfatherAlive">Dede sağ</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Yaşayan amca/hala sayısı</label>
+                        <input class="form-control" type="number" name="paternalGrandfatherUnclesAuntsAliveCount" min="0" value="0" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Önce vefat eden kaç amca/hala var?</label>
+                        <input class="form-control" type="number" id="paternalGrandfatherPredeceasedCount" min="0" value="0" />
+                    </div>
+                    <div id="paternalGrandfatherCousinsSection" style="display: none;">
+                        <label class="form-label fw-bold mb-3">Her ölen amca/hala'nın kaç kuzeni var?</label>
+                        <div id="paternalGrandfatherCousinsInputs" class="mb-3">
+                            <!-- JavaScript ile dinamik olarak eklenecek -->
+                        </div>
+                    </div>
+                    <input type="hidden" name="paternalGrandfatherPredeceasedUnclesAuntsChildrenCounts" id="paternalGrandfatherPredeceasedUnclesAuntsChildrenCounts" value="[]" />
+                </div>
+                
+                <!-- Baba Tarafı Büyükanne -->
+                <div class="mb-4 p-3 border rounded">
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="paternalGrandmotherAlive" name="paternalGrandmotherAlive" value="true">
+                            <label class="form-check-label" for="paternalGrandmotherAlive">Nine sağ</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Yaşayan amca/hala sayısı</label>
+                        <input class="form-control" type="number" name="paternalGrandmotherUnclesAuntsAliveCount" min="0" value="0" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Önce vefat eden kaç amca/hala var?</label>
+                        <input class="form-control" type="number" id="paternalGrandmotherPredeceasedCount" min="0" value="0" />
+                    </div>
+                    <div id="paternalGrandmotherCousinsSection" style="display: none;">
+                        <label class="form-label fw-bold mb-3">Her ölen amca/hala'nın kaç kuzeni var?</label>
+                        <div id="paternalGrandmotherCousinsInputs" class="mb-3">
+                            <!-- JavaScript ile dinamik olarak eklenecek -->
+                        </div>
+                    </div>
+                    <input type="hidden" name="paternalGrandmotherPredeceasedUnclesAuntsChildrenCounts" id="paternalGrandmotherPredeceasedUnclesAuntsChildrenCounts" value="[]" />
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <h6>Anne Tarafı</h6>
+                
+                <!-- Anne Tarafı Büyükbaba -->
+                <div class="mb-4 p-3 border rounded">
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="maternalGrandfatherAlive" name="maternalGrandfatherAlive" value="true">
+                            <label class="form-check-label" for="maternalGrandfatherAlive">Dede sağ</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Yaşayan dayı/teyze sayısı</label>
+                        <input class="form-control" type="number" name="maternalGrandfatherUnclesAuntsAliveCount" min="0" value="0" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Önce vefat eden kaç dayı/teyze var?</label>
+                        <input class="form-control" type="number" id="maternalGrandfatherPredeceasedCount" min="0" value="0" />
+                    </div>
+                    <div id="maternalGrandfatherCousinsSection" style="display: none;">
+                        <label class="form-label fw-bold mb-3">Her ölen dayı/teyze'nin kaç kuzeni var?</label>
+                        <div id="maternalGrandfatherCousinsInputs" class="mb-3">
+                            <!-- JavaScript ile dinamik olarak eklenecek -->
+                        </div>
+                    </div>
+                    <input type="hidden" name="maternalGrandfatherPredeceasedUnclesAuntsChildrenCounts" id="maternalGrandfatherPredeceasedUnclesAuntsChildrenCounts" value="[]" />
+                </div>
+                
+                <!-- Anne Tarafı Büyükanne -->
+                <div class="mb-4 p-3 border rounded">
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="maternalGrandmotherAlive" name="maternalGrandmotherAlive" value="true">
+                            <label class="form-check-label" for="maternalGrandmotherAlive">Nine sağ</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Yaşayan dayı/teyze sayısı</label>
+                        <input class="form-control" type="number" name="maternalGrandmotherUnclesAuntsAliveCount" min="0" value="0" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Önce vefat eden kaç dayı/teyze var?</label>
+                        <input class="form-control" type="number" id="maternalGrandmotherPredeceasedCount" min="0" value="0" />
+                    </div>
+                    <div id="maternalGrandmotherCousinsSection" style="display: none;">
+                        <label class="form-label fw-bold mb-3">Her ölen dayı/teyze'nin kaç kuzeni var?</label>
+                        <div id="maternalGrandmotherCousinsInputs" class="mb-3">
+                            <!-- JavaScript ile dinamik olarak eklenecek -->
+                        </div>
+                    </div>
+                    <input type="hidden" name="maternalGrandmotherPredeceasedUnclesAuntsChildrenCounts" id="maternalGrandmotherPredeceasedUnclesAuntsChildrenCounts" value="[]" />
+                </div>
+            </div>
+        </div>
+        <div class="alert alert-info">
+            <strong>Bilgi:</strong> Bu son adım. Büyükanne/büyükbaba ve onların çocukları (amca/hala/dayı/teyze) mirasçı olabilir.
+        </div>
+        <div class="d-flex justify-content-between">
+            <a href="@Url.Action("Back", new { currentStep = "ThirdDegree" })" class="btn btn-secondary">← Geri</a>
+            <button class="btn btn-success" type="submit">Hesapla</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('thirdDegreeForm');
+    
+    // Tüm büyükanne/büyükbaba için aynı mantık
+    const sections = [
+        {
+            countInput: 'paternalGrandfatherPredeceasedCount',
+            section: 'paternalGrandfatherCousinsSection',
+            inputs: 'paternalGrandfatherCousinsInputs',
+            hiddenInput: 'paternalGrandfatherPredeceasedUnclesAuntsChildrenCounts',
+            label: 'amca/hala'
+        },
+        {
+            countInput: 'paternalGrandmotherPredeceasedCount',
+            section: 'paternalGrandmotherCousinsSection',
+            inputs: 'paternalGrandmotherCousinsInputs',
+            hiddenInput: 'paternalGrandmotherPredeceasedUnclesAuntsChildrenCounts',
+            label: 'amca/hala'
+        },
+        {
+            countInput: 'maternalGrandfatherPredeceasedCount',
+            section: 'maternalGrandfatherCousinsSection',
+            inputs: 'maternalGrandfatherCousinsInputs',
+            hiddenInput: 'maternalGrandfatherPredeceasedUnclesAuntsChildrenCounts',
+            label: 'dayı/teyze'
+        },
+        {
+            countInput: 'maternalGrandmotherPredeceasedCount',
+            section: 'maternalGrandmotherCousinsSection',
+            inputs: 'maternalGrandmotherCousinsInputs',
+            hiddenInput: 'maternalGrandmotherPredeceasedUnclesAuntsChildrenCounts',
+            label: 'dayı/teyze'
+        }
+    ];
+    
+    function updateCousinsInputs(count, sectionElement, inputsContainer, hiddenInput, labelText) {
+        if (count > 0) {
+            sectionElement.style.display = 'block';
+            inputsContainer.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const div = document.createElement('div');
+                div.className = 'mb-3';
+                div.innerHTML = `
+                    <label class="form-label">${i}. ölen ${labelText}'nin kaç kuzeni var?</label>
+                    <input class="form-control cousin-input" type="number" min="0" value="0" data-input-id="${hiddenInput.id}" />
+                    <small class="form-text text-muted">Eğer bu ${labelText}'nin kuzeni yoksa 0 yazın</small>
+                `;
+                inputsContainer.appendChild(div);
+            }
+        } else {
+            sectionElement.style.display = 'none';
+            inputsContainer.innerHTML = '';
+        }
+        updateJsonForSection(hiddenInput);
+    }
+    
+    function updateJsonForSection(hiddenInput) {
+        const allInputs = document.querySelectorAll(`.cousin-input[data-input-id="${hiddenInput.id}"]`);
+        const counts = Array.from(allInputs).map(input => parseInt(input.value || 0));
+        hiddenInput.value = JSON.stringify(counts);
+    }
+    
+    // Her bölüm için event listener ekle
+    sections.forEach(section => {
+        const countInput = document.getElementById(section.countInput);
+        const sectionElement = document.getElementById(section.section);
+        const inputsContainer = document.getElementById(section.inputs);
+        const hiddenInput = document.getElementById(section.hiddenInput);
+        
+        if (countInput && sectionElement && inputsContainer && hiddenInput) {
+            countInput.addEventListener('input', function() {
+                const count = parseInt(this.value || 0);
+                updateCousinsInputs(count, sectionElement, inputsContainer, hiddenInput, section.label);
+            });
+            
+            // İlk yükleme
+            const initialCount = parseInt(countInput.value || 0);
+            updateCousinsInputs(initialCount, sectionElement, inputsContainer, hiddenInput, section.label);
+        }
+    });
+    
+    // Tüm kuzen input değişikliklerini dinle
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('cousin-input')) {
+            const inputId = e.target.getAttribute('data-input-id');
+            const hiddenInput = document.getElementById(inputId);
+            if (hiddenInput) {
+                updateJsonForSection(hiddenInput);
+            }
+        }
+    });
+    
+    // Form submit öncesi kontrol
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            sections.forEach(section => {
+                const hiddenInput = document.getElementById(section.hiddenInput);
+                if (hiddenInput) {
+                    updateJsonForSection(hiddenInput);
+                }
+            });
+        });
+    }
+});
+</script>

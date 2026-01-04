@@ -1,0 +1,118 @@
+@{
+    ViewData["Title"] = "Çocuklar";
+}
+<div class="card wizard-card p-4">
+    <div class="wizard-progress"><div class="bar" style="--progress: 70%"></div></div>
+    <h4 class="mb-3">Miras Hesaplama - Çocuklar</h4>
+    <form asp-action="Children" method="post" id="childrenForm">
+        <div class="mb-3">
+            <label class="form-label">Hayatta olan kaç çocuk var?</label>
+            <input class="form-control" type="number" name="livingChildrenCount" id="livingChildrenCount" min="0" value="0" required />
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Önce vefat eden kaç çocuk var?</label>
+            <input class="form-control" type="number" id="predeceasedChildrenCount" min="0" value="0" />
+            <small class="form-text text-muted">
+                Eğer önceden ölen çocuklarınız varsa sayısını girin
+            </small>
+        </div>
+        
+        <!-- Dinamik Torun Sayıları Bölümü -->
+        <div id="grandchildrenSection" style="display: none;">
+            <label class="form-label fw-bold mb-3">Her ölen çocuğun kaç torunu var?</label>
+            <div id="grandchildrenInputs" class="mb-3">
+                <!-- JavaScript ile dinamik olarak eklenecek -->
+            </div>
+        </div>
+        
+        <!-- Hidden input - JSON formatında backend'e gönderilecek -->
+        <input type="hidden" name="predeceasedChildrenGrandchildrenCounts" id="predeceasedChildrenGrandchildrenCounts" value="[]" />
+        
+        <input type="hidden" name="hasPredeceasedChild" value="false" />
+        <input type="hidden" name="hasGrandchildrenFromPredeceasedChild" value="false" />
+        
+        <div class="alert alert-info" id="infoMessage" style="display: none;">
+            <strong>Bilgi:</strong> Çocuk/torun varsa miras 1. zümreye göre hesaplanır. Diğer akrabalar mirasçı olamaz.
+        </div>
+        
+        <div class="d-flex justify-content-between">
+            <a href="@Url.Action("Back", new { currentStep = "Children" })" class="btn btn-secondary">← Geri</a>
+            <button class="btn btn-success" type="submit">Devam</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const livingChildrenInput = document.getElementById('livingChildrenCount');
+    const predeceasedCountInput = document.getElementById('predeceasedChildrenCount');
+    const grandchildrenSection = document.getElementById('grandchildrenSection');
+    const grandchildrenInputs = document.getElementById('grandchildrenInputs');
+    const hiddenJsonInput = document.getElementById('predeceasedChildrenGrandchildrenCounts');
+    const infoMessage = document.getElementById('infoMessage');
+    const form = document.getElementById('childrenForm');
+    
+    function updateGrandchildrenInputs() {
+        const count = parseInt(predeceasedCountInput.value || 0);
+        
+        if (count > 0) {
+            grandchildrenSection.style.display = 'block';
+            grandchildrenInputs.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const div = document.createElement('div');
+                div.className = 'mb-3';
+                div.innerHTML = `
+                    <label class="form-label">${i}. ölen çocuğun kaç torunu var?</label>
+                    <input class="form-control grandchild-input" type="number" min="0" value="0" data-index="${i - 1}" />
+                    <small class="form-text text-muted">Eğer bu çocuğun torunu yoksa 0 yazın</small>
+                `;
+                grandchildrenInputs.appendChild(div);
+            }
+        } else {
+            grandchildrenSection.style.display = 'none';
+            grandchildrenInputs.innerHTML = '';
+        }
+        
+        updateJsonAndInfo();
+    }
+    
+    function updateJsonAndInfo() {
+        const grandchildInputs = document.querySelectorAll('.grandchild-input');
+        const counts = Array.from(grandchildInputs).map(input => parseInt(input.value || 0));
+        
+        // JSON formatına çevir
+        hiddenJsonInput.value = JSON.stringify(counts);
+        
+        // Info mesajını güncelle
+        const hasChildren = parseInt(livingChildrenInput.value || 0) > 0 || counts.length > 0;
+        const hasGrandchildren = counts.some(c => c > 0);
+        
+        if (hasChildren || hasGrandchildren) {
+            infoMessage.style.display = 'block';
+        } else {
+            infoMessage.style.display = 'none';
+        }
+    }
+    
+    // Event listeners
+    predeceasedCountInput.addEventListener('input', updateGrandchildrenInputs);
+    livingChildrenInput.addEventListener('input', updateJsonAndInfo);
+    
+    // Grandchild input değişikliklerini dinle
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('grandchild-input')) {
+            updateJsonAndInfo();
+        }
+    });
+    
+    // Form submit öncesi kontrol
+    form.addEventListener('submit', function(e) {
+        updateJsonAndInfo();
+    });
+    
+    // İlk yükleme
+    updateGrandchildrenInputs();
+});
+</script>
